@@ -8,7 +8,7 @@ pipeline {
     environment {
         dockerHome = tool 'myDocker'
         mavenHome = tool 'myMaven'
-        PATH = "$dockerHome/bin:$mavenHome/bin:$PATH"
+        PATH = "${dockerHome}/bin:${mavenHome}/bin:${env.PATH}"
     }
 
     stages {
@@ -26,34 +26,34 @@ pipeline {
             }
         }
 
-         stage('Compile') {
+        stage('Compile') {
             steps {
                 sh 'mvn clean compile'
             }
         }
-        
+
         stage('Test') {
             steps {
                 sh 'mvn test'
             }
         }
-        
+
         stage('Integration Test') {
             steps {
-                sh 'failsafe:integration-test failsafe:verify'
+                sh 'mvn failsafe:integration-test failsafe:verify'
             }
         }
-    } 
-	
-	post {
-		always {
-			echo 'I am awesome. I run always.'
-		}
-		success {
-			echo 'I run when you are successful.'
-		}
-		failure {
-			echo 'I run when you fail.'
-		}
-	}
+    }
+
+    post {
+        always {
+            echo 'I am awesome. I run always.'
+        }
+        success {
+            echo 'I run when you are successful.'
+        }
+        failure {
+            echo 'I run when you fail.'
+        }
+    }
 }
