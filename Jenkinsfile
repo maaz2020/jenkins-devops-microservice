@@ -44,6 +44,28 @@ pipeline {
                 sh 'mvn failsafe:integration-test failsafe:verify'
             }
         }
+         stage('Package') {
+            steps {
+                sh 'mvn package -DskipTests'
+            }
+        }
+          stage('Docker Build Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("warsiviews123/currency-exchange-devops:${env.BUILD_TAG}")
+                }
+            }
+        }
+          stage('Docker Push Image') {
+            steps {
+                script {
+                    docker.withRegistry('', 'dockerhub'){
+                    dockerImage.push()
+                    dockerImage.push("latest")
+                    }
+                }
+            }
+        }
     }
 
     post {
